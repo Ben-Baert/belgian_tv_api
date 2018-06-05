@@ -14,12 +14,21 @@ class BaseModel(Model):
         database = DATABASE
 
 
+class Actor(Model):
+    name = CharField()
+
+
+class Genre(Model):
+    name = CharField()
+
+
 class Channel(Model):
     name = CharField()
 
 
 class Show(Model):
     name = CharField()
+    genre = ForeignKeyField(Genre, related_name='shows')
 
 
 class Episode(Model):
@@ -41,3 +50,8 @@ class Label(Model):
 class AiringLabelRelationship(Model):
     airing = ForeignKeyField(Airing, related_name='labels')
     label = ForeignKeyField(Label, related_name='airings')
+
+
+class ActorEpisodeRelationship(Model):
+    actor = ForeignKeyField(Actor, related_name='episodes')
+    episode = ForeignKeyField(Episode, related_name='actors')
