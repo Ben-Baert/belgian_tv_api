@@ -2,6 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 from twiggy import log
 from datetime import datetime, timedelta
+from tv.models import Channel
+from tv.models import Show
+from tv.models import Episode
+from tv.models import Airing
+from tv.models import Label
 
 
 logger = log.name('gvascraper')
@@ -9,9 +14,9 @@ logger = log.name('gvascraper')
 TODAY = datetime.now().date()
 DAYS = ['vandaag', 'morgen', 'overmorgen']
 TV_STATION_PAGES = (str(i) for i in range(27))
-URLS = (("http://www.gva.be/tv-gids/{}/{}".format(day, tv_station_page), day)
-        for day in DAYS
-        for tv_station_page in TV_STATION_PAGES)
+START_URLS = (("http://www.gva.be/tv-gids/{}/{}".format(day, tv_station_page), day)
+            for day in DAYS
+            for tv_station_page in TV_STATION_PAGES)
 
 
 def get_date(day):
@@ -36,13 +41,10 @@ def scrape_url(url, day):
         for program in programs:
             begin_time = program.div.text
             program_name = program.find('a').text
-            print(date, channel_name, begin_time, program_name)
+            date, channel_name, begin_time, program_name
             yield date, channel_name, begin_time, program_name
 
 
-def main():
-    for url, day in URLS:
-        yield from scrape_url(url, day)
 
 if __name__ == '__main__':
     main()
