@@ -50,7 +50,7 @@ def get_genre(program):
     regex_pattern = r"^(?:\w+) \| ([\w\s]+) \| "
 
     try:
-        return re.search(regex_pattern, string)[1]
+        return re.search(regex_pattern, string)[1].strip()
     except TypeError:
         return "Onbekend"
 

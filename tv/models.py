@@ -1,3 +1,5 @@
+import json
+
 from peewee import SqliteDatabase
 from peewee import Model
 from peewee import DateTimeField
@@ -56,7 +58,7 @@ class Airing(BaseModel):
 
     @property
     def genre(self):
-        return self.show.genre.name
+        return self.episode.show.genre.name
 
     @property
     def actor_names(self):
@@ -65,6 +67,18 @@ class Airing(BaseModel):
     @property
     def label_names(self):
         return [label.label.name for label in self.labels]
+
+    def dict(self):
+        airing_dict = {}
+        airing_dict["name"] = self.show_name
+        airing_dict["description"] = self.description
+        airing_dict["begin_dt"] = self.begin_dt.strftime("%Y-%m-%d %H:%M")
+        airing_dict["end_dt"] = self.end_dt.strftime("%Y-%m-%d %H:%M")
+        airing_dict["channel"] = self.channel_name
+        airing_dict["genre"] = self.genre
+        airing_dict["actors"] = self.actor_names
+        airing_dict["labels"] = self.label_names
+        return airing_dict
 
 
 class Label(BaseModel):

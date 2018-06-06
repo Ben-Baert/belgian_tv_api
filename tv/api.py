@@ -1,52 +1,54 @@
 import falcon
 import json
+import datetime
+
+from wsgiref import simple_server
+
 from models import Airing
-from api_helpers import get_name
+from models import Channel
 
 
-class DayResource:
-    def on_get(request, response):
-        body = []
+class AiringResource:
+    def on_get(self, request, response):
+        body = {}
         today = datetime.datetime.now().date()
         airings = (Airing
-                   .select()
-                   .where(Airing.begin_dt.date() == today))
+                   .select())
+                   #.where(Airing.show_name == "Thuis"))
+
+
+        body["count"] = airings.count()
+        body["airings"] = []
 
         for airing in airings:
-            airing_dict = {}
-            airing_dict["name"] = airing.show_name
-            airing_dict["description"] = airing.description
-            airing_dict["begin_dt"] = airing.begin_dt
-            airing_dict["end_dt"] = airing.end_dt
-            airing_dict["channel"] = airing.channel_name
-            airing_dict["genre"] = airing.genre
-            airing_dict["actors"] = airing.actor_names
-            airing_dict["labels"] = airing.label_names
-            body.append(airing_dict)
+            body["airings"].append(airing.dict())
 
-        response.body = json.dumps(airing_dict)
-        response.status_code == 200
+        response.body = json.dumps(body)
+        response.status == falcon.HTTP_200
 
 
 class ChannelResource:
-    def on_get(request, response):
-        pass
+    def on_get(self, request, response):
+        channels = Channel.select()
+        body = {}
 
+        body["count"] = channels.count()
+        body["channels"] = [channel.name for channel in channels]
 
-class ShowResource:
-    def on_get(request, response):
-        pass
+        response.body = json.dumps(body)
+        response.status = falcon.HTTP_200
 
-
-class ActorResource:
-    def on_get(request, response):
-        pass
-
-
-class GenreResource:
-    def on_get(request, response):
-        pass
 
 api = falcon.API()
-days = DayResource()
-api.register('/day', days)
+
+airings = AiringResource()
+api.add_route('/airing', airings)
+
+channels = ChannelResource()
+api.add_route("/channel", channels)
+
+
+
+if __name__ == '__main__':
+    httpd = simple_server.make_server('127.0.0.1', 8000, api)
+    httpd.serve_forever()
