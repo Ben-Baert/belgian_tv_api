@@ -42,6 +42,30 @@ class Airing(BaseModel):
     begin_dt = DateTimeField()
     end_dt = DateTimeField()
 
+    @property
+    def show_name(self):
+        return self.episode.show.name
+
+    @property
+    def channel_name(self):
+        return self.channel.name
+
+    @property
+    def description(self):
+        return self.episode.description
+
+    @property
+    def genre(self):
+        return self.show.genre.name
+
+    @property
+    def actor_names(self):
+        return [actor.actor.name for actor in self.episode.actors]
+
+    @property
+    def label_names(self):
+        return [label.label.name for label in self.labels]
+
 
 class Label(BaseModel):
     name = CharField()

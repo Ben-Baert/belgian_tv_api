@@ -4,15 +4,15 @@ import datetime
 import locale
 from bs4 import BeautifulSoup
 from twiggy import log
-from models import Channel
-from models import Genre
-from models import Show
-from models import Episode
-from models import Airing
-from models import Label
-from models import Actor
-from models import ActorEpisodeRelationship
-from models import AiringLabelRelationship
+from tv.models import Channel
+from tv.models import Genre
+from tv.models import Show
+from tv.models import Episode
+from tv.models import Airing
+from tv.models import Label
+from tv.models import Actor
+from tv.models import ActorEpisodeRelationship
+from tv.models import AiringLabelRelationship
 
 
 locale.setlocale(locale.LC_ALL, "nl_BE")
