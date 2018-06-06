@@ -6,12 +6,13 @@ from wsgiref import simple_server
 
 from models import Airing
 from models import Channel
+from models import Show
 
 
 class AiringResource:
     def on_get(self, request, response):
         body = {}
-        today = datetime.datetime.now().date()
+        begin_dt = request.
         airings = (Airing
                    .select())
                    #.where(Airing.show_name == "Thuis"))
@@ -26,6 +27,14 @@ class AiringResource:
         response.body = json.dumps(body)
         response.status == falcon.HTTP_200
 
+        # filter by begin_dt
+        # filter by end_dt
+        # filter by show
+        # filter by actor
+        # filter by channel
+        # option to sort
+        # cache with REDIS
+
 
 class ChannelResource:
     def on_get(self, request, response):
@@ -38,6 +47,22 @@ class ChannelResource:
         response.body = json.dumps(body)
         response.status = falcon.HTTP_200
 
+        # cache with REDIS
+
+
+class ShowResource:
+    def on_get(self, request, response):
+        shows = Show.select()
+        body = {}
+
+        body["count"] = shows.count()
+        body["shows"] = [show.name for show in shows]
+
+        response.body = json.dumps(body)
+        response.status = falcon.HTTP_200
+
+        # cache with REDIS
+
 
 api = falcon.API()
 
@@ -46,6 +71,9 @@ api.add_route('/airing', airings)
 
 channels = ChannelResource()
 api.add_route("/channel", channels)
+
+shows = ShowResource()
+api.add_route("/show", shows)
 
 
 

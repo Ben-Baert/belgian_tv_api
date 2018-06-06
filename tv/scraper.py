@@ -26,11 +26,11 @@ START_URLS = ("http://www.gva.be/tv-gids/{}/{}".format(day, tv_station_page)
               for tv_station_page in TV_STATION_PAGES)
 
 
-def get_title(program):
+def get_title(program: BeautifulSoup) -> str:
     return program.find("h3", {"class": "program-full__title"}).text.strip()
 
 
-def get_channel(program):
+def get_channel(program: BeautifulSoup) -> str:
     string = (program
               .find("h3", {"class": "program-full__title"})
               .find_next("p")
@@ -39,7 +39,7 @@ def get_channel(program):
     return re.search(regex_pattern, string)[0].strip()
 
 
-def get_genre(program):
+def get_genre(program: BeautifulSoup) -> str:
     try:
         string = (program
                   .find("h3", {"class": "program-full__title"})
@@ -55,7 +55,7 @@ def get_genre(program):
         return "Onbekend"
 
 
-def get_actors(program):
+def get_actors(program: BeautifulSoup) -> str:
     try:
         actors_string = program.find("p", {"class": "tvguide-actors"}).text
     except AttributeError:  # actors not found
@@ -64,15 +64,15 @@ def get_actors(program):
     return re.findall(regex_pattern, actors_string)
 
 
-def get_month(month_string):
-    return datetime.datetime.strptime(month_string, "%b").month
+def get_month(month: str) -> int:
+    return datetime.datetime.strptime(month, "%b").month
 
 
-def get_day(day_string):
-    return int(day_string)
+def get_day(day: str) -> int:
+    return int(day)
 
 
-def get_dts(program):
+def get_dts(program: BeautifulSoup) -> (datetime.datetime, datetime.datetime):
     string = program.find("span", {"class": "program-full__time"}).text
     regex_pattern = r"(?P<date_of_week>[a-z]+) "
     regex_pattern += r"(?P<day>\d{2}) "
@@ -114,7 +114,7 @@ def get_dts(program):
     return begin_dt, end_dt
 
 
-def get_description(program):
+def get_description(program: BeautifulSoup) -> str:
     try:
         return (program
                 .find("p", {"class": "tvguide-actors"})
@@ -125,13 +125,13 @@ def get_description(program):
         return ""
 
 
-def get_labels(program):
+def get_labels(program: BeautifulSoup) -> [str]:
     return [label.text
             for label in program.find_all(
                 "span", {"class": "label"})]
 
 
-def add_program_to_database(program):
+def add_program_to_database(program: BeautifulSoup) -> None:
     title = get_title(program)
     channel = get_channel(program)
     channel = Channel.get_or_create(name=channel)[0]
@@ -160,7 +160,7 @@ def add_program_to_database(program):
         AiringLabelRelationship(airing=airing, label=label)
 
 
-def scraper(url):
+def scraper(url: str) -> None:
     logger.info('Accessing {}', url)
     request = requests.get(url).text
     soup = BeautifulSoup(request, "lxml")
@@ -172,7 +172,7 @@ def scraper(url):
         add_program_to_database(program)
 
 
-def main():
+def main() -> None:
     for url in START_URLS:
         scraper(url)
 
